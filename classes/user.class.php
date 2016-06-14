@@ -1777,6 +1777,47 @@ class User extends Model {
       return $options["$optionKey"];
    }
    
+   public function addNewTokenToUser() {
+      $query = "SELECT id ".
+                  "FROM `codev_users_table` ".
+                  "WHERE id = $this->id;";
+
+      $result = SqlWrapper::getInstance()->sql_query($query);
+      $resttoken = bin2hex(openssl_random_pseudo_bytes(16));
+      if(SqlWrapper::getInstance()->sql_num_rows($result) != 0) {
+         //$row = SqlWrapper::getInstance()->sql_fetch_object($result);
+         
+         $query2 = "UPDATE `codev_users_table` ".
+                  "SET resttoken = '$resttoken' WHERE id=$this->id;";
+         $result2 = SqlWrapper::getInstance()->sql_query($query2);
+         if (!$result2) {
+            echo "<span style='color:red'>ERROR: Query FAILED</span>";
+            exit;
+         }
+      }
+      else{
+         $query3 = "INSERT INTO `codev_users_table` (`id`, `resttoken`) VALUES ($this->id, '$resttoken');";
+         $result3 = SqlWrapper::getInstance()->sql_query($query3);
+         if (!$result3) {
+            echo "<span style='color:red'>ERROR: Query FAILED</span>";
+            exit;
+         }
+      }
+      return $resttoken;
+   }
+   
+   public function getRestToken() {
+     $query = "SELECT resttoken ".
+                  "FROM `codev_users_table` ".
+                  "WHERE id = $this->id;";
+
+      $result = SqlWrapper::getInstance()->sql_query($query);
+      if(SqlWrapper::getInstance()->sql_num_rows($result) != 0) {
+         $row = SqlWrapper::getInstance()->sql_fetch_object($result);
+      }
+      return $row->resttoken;
+   }
+   
 }
 
 // Initialize complex static variables

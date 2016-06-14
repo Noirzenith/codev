@@ -1,0 +1,26 @@
+<div>
+   <div>
+      <span>{$name}</span>     
+   </div>
+
+   <span id="resttoken">{$resttoken} </span><button onclick="getKey()">Key</button>
+</div>
+
+<script>
+   function getKey() {
+         jQuery.ajax({
+            async: false,
+            url: "admin/my_profil_ajax.php",
+            dataType:"text",
+            success: function(data) {
+               jQuery("#resttoken").html(data);
+
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+               if(errorThrown == 'Forbidden') {
+                  window.location = '{$page}';
+               }
+            }
+         });
+   }
+</script>
